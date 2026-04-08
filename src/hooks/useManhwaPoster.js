@@ -4,8 +4,18 @@ const cache = new Map();
 
 function slugify(title) {
   return (title || "").toLowerCase().normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "").replace(/[\u0027\u0060\u00b4\u2018\u2019\u201a\u201b]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\u0027\u0060\u00b4\u2018\u2019\u201a\u201b]/g, "")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function testImage(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload  = () => resolve(img.naturalWidth > 10 ? url : null);
+    img.onerror = () => resolve(null);
+    img.src = url + "?t=" + Date.now(); // évite le cache navigateur
+  });
 }
 
 async function probeLocalCover(title) {
@@ -14,14 +24,11 @@ async function probeLocalCover(title) {
   const short = full.split("-").slice(0, 4).join("-");
   for (const p of [...new Set([full, short])]) {
     for (const e of ["webp", "jpg", "png"]) {
-      try {
-        const r = await fetch(`/covers/${p}.${e}`);
-        const ct = r.headers.get("content-type") || "";
-        if (r.ok && ct.startsWith("image/")) {
-          cache.set(title, `/covers/${p}.${e}`);
-          return `/covers/${p}.${e}`;
-        }
-      } catch {}
+      const result = await testImage(`/covers/${p}.${e}`);
+      if (result) {
+        cache.set(title, `/covers/${p}.${e}`);
+        return `/covers/${p}.${e}`;
+      }
     }
   }
   cache.set(title, null);
