@@ -6,7 +6,10 @@
       "Bash(cat /c/anyplace-react/dist/assets/index-*.js)",
       "Bash(curl -s \"https://aniverse-66615.web.app/assets/useManhwaPoster-CfaSsdaR.js\")",
       "Bash(git init:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

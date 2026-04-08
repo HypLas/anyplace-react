@@ -15,8 +15,8 @@ async function probeLocalCover(title) {
   for (const p of [...new Set([full, short])]) {
     for (const e of ["webp", "jpg", "png"]) {
       try {
-        const r = await fetch(`/covers/${p}.${e}`);
-        if (r.ok && r.headers.get("content-type")?.startsWith("image/")) {
+        const r = await fetch(`/covers/${p}.${e}`, { method: "HEAD" });
+        if (r.ok && !r.headers.get("content-type")?.includes("text/html")) {
           cache.set(title, `/covers/${p}.${e}`);
           return `/covers/${p}.${e}`;
         }
