@@ -9,39 +9,33 @@ function slugify(title) {
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function testImage(url) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload  = () => resolve(img.naturalWidth > 10 ? url : null);
-    img.onerror = () => resolve(null);
-    img.src = url + "?t=" + Date.now(); // évite le cache navigateur
-  });
-}
-
 async function probeLocalCover(title) {
   if (cache.has(title)) return cache.get(title);
   const full  = slugify(title);
   const short = full.split("-").slice(0, 4).join("-");
   for (const p of [...new Set([full, short])]) {
     for (const e of ["webp", "jpg", "png"]) {
-      const result = await testImage(`/covers/${p}.${e}`);
-      if (result) {
-        cache.set(title, `/covers/${p}.${e}`);
-        return `/covers/${p}.${e}`;
-      }
+      try {
+        const r = await fetch(`/covers/${p}.${e}`, { method: "HEAD" });
+        if (r.ok) {
+          cache.set(title, `/covers/${p}.${e}`);
+          return `/covers/${p}.${e}`;
+        }
+      } catch {}
     }
   }
   cache.set(title, null);
   return null;
 }
 
-export default function useManhwaPoster(title) {
-  const [poster, setPoster] = useState(null);
+export default function useManhwaPoster(img, title) {
+  const [poster, setPoster] = useState(img || null);
 
   useEffect(() => {
+    if (img) { setPoster(img); return; }
     if (!title) return;
     probeLocalCover(title).then(src => setPoster(src));
-  }, [title]);
+  }, [img, title]);
 
   return poster;
 }

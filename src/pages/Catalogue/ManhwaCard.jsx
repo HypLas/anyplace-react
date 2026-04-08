@@ -1,7 +1,9 @@
+import useManhwaPoster from "../../hooks/useManhwaPoster";
+
 export default function ManhwaCard({ manhwa, isOwner, deleteMode, onDelete, onClick }) {
   const genres    = Array.isArray(manhwa.genres) && manhwa.genres.length > 0
     ? manhwa.genres : (manhwa.genre ? [manhwa.genre] : []);
-  const posterSrc = manhwa.img || null;
+  const posterSrc = useManhwaPoster(manhwa.img, manhwa.title);
 
   return (
     <div className="anime-card" onClick={() => !deleteMode && onClick(manhwa)}>

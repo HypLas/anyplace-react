@@ -25,7 +25,7 @@ const STATUS_CLS = {
 function ManhwaCard({ manhwa, onRemove, onOpen, deleteMode }) {
   const genres    = Array.isArray(manhwa.genres) && manhwa.genres.length > 0
     ? manhwa.genres : (manhwa.genre ? [manhwa.genre] : []);
-  const posterSrc = useManhwaPoster(manhwa.title);
+  const posterSrc = useManhwaPoster(manhwa.img, manhwa.title);
 
   return (
     <div className="anime-card" onClick={() => onOpen(manhwa)}>

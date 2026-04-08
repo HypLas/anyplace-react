@@ -118,7 +118,7 @@ export default function ManhwaDetail() {
   const [eSelSites,  setESelSites]  = useState([]);
 
   const { banner, chapters: mdxChapters } = useManhwaMedia(manhwa?.title, manhwa?.img);
-  const posterSrc = useManhwaPoster(manhwa?.title);
+  const posterSrc = useManhwaPoster(manhwa?.img, manhwa?.title);
 
 
   useEffect(() => {
