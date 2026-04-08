@@ -4,14 +4,14 @@ const cache = new Map();
 
 function slugify(title) {
   return (title || "").toLowerCase().normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "").replace(/[''`]/g, "")
+    .replace(/[\u0300-\u036f]/g, "").replace(/[\u0027\u0060\u00b4\u2018\u2019\u201a\u201b]/g, "")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 function testImage(url) {
   return new Promise(resolve => {
     const img = new Image();
-    img.onload  = () => resolve(img.naturalWidth > 0 ? url : null);
+    img.onload  = () => resolve(url);
     img.onerror = () => resolve(null);
     img.src = url;
   });
