@@ -53,7 +53,7 @@ export default function AddManhwaModal({ editManhwa, onClose, onSaved }) {
   const [synopsis,        setSynopsis]        = useState(editManhwa?.synopsis        || "");
   const [derniereLecture, setDerniereLecture] = useState(editManhwa?.derniereLecture || "");
 
-  const [img] = useState(editManhwa?.img || "");
+  const [img, setImg] = useState(editManhwa?.img || "");
 
   const initSites = editManhwa?.sites || [];
   const [selectedSites, setSelectedSites] = useState(initSites.map(s => s.name));
@@ -189,6 +189,13 @@ export default function AddManhwaModal({ editManhwa, onClose, onSaved }) {
                 </button>
               ))}
             </div>
+          </section>
+
+          {/* ── Image ── */}
+          <section>
+            <SectionTitle label="Image (couverture)" color="var(--or)" />
+            <input className={inp} type="url" value={img}
+                   onChange={e => setImg(e.target.value)} placeholder="https://… (URL de la couverture)" />
           </section>
 
           {/* ── Synopsis ── */}
