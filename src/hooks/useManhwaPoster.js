@@ -21,6 +21,7 @@ async function probeLocalCover(title) {
   if (cache.has(title)) return cache.get(title);
   const full  = slugify(title);
   const short = full.split("-").slice(0, 4).join("-");
+  console.log(`[cover] "${title}" → full="${full}" short="${short}"`);
   for (const p of [...new Set([full, short])]) {
     for (const e of ["webp", "jpg", "png"]) {
       const url = `/covers/${p}.${e}`;
