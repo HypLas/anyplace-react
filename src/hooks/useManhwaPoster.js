@@ -11,7 +11,7 @@ function slugify(title) {
 function testImage(url) {
   return new Promise(resolve => {
     const img = new Image();
-    img.onload  = () => resolve(url);
+    img.onload  = () => resolve(img.naturalWidth > 0 ? url : null);
     img.onerror = () => resolve(null);
     img.src = url;
   });
