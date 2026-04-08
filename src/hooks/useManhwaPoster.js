@@ -8,19 +8,27 @@ function slugify(title) {
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+function testImage(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload  = () => resolve(url);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 async function probeLocalCover(title) {
   if (cache.has(title)) return cache.get(title);
   const full  = slugify(title);
   const short = full.split("-").slice(0, 4).join("-");
   for (const p of [...new Set([full, short])]) {
     for (const e of ["webp", "jpg", "png"]) {
-      try {
-        const r = await fetch(`/covers/${p}.${e}`, { method: "HEAD" });
-        if (r.ok && !r.headers.get("content-type")?.includes("text/html")) {
-          cache.set(title, `/covers/${p}.${e}`);
-          return `/covers/${p}.${e}`;
-        }
-      } catch {}
+      const url = `/covers/${p}.${e}`;
+      const result = await testImage(url);
+      if (result) {
+        cache.set(title, url);
+        return url;
+      }
     }
   }
   cache.set(title, null);
