@@ -87,8 +87,9 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const yyyy = today.getFullYear();
     const todayStr = `${dd}/${mm}/${yyyy}`;
-    for (let i = 1; i <= n; i++) {
-      rows.push({ num: rows.length + 1, title: "", date: todayStr });
+    const startPos = rows.length + 1; // position dans la saison active, repart de 1 par saison
+    for (let i = 0; i < n; i++) {
+      rows.push({ num: startPos + i, title: "", date: todayStr });
     }
     await save(t);
     setBulkCount("");
@@ -248,10 +249,10 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
           <div className="grid gap-x-4 gap-y-6"
                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
             {table.rows.map((row, i) => {
-              const epNum  = Number(row.num ?? i + 1);
+              const epNum  = i + 1;   // toujours position dans la saison, jamais le num stocké
               const wKey   = `${activeIdx}_${i}`;
               const seen   = !!watched?.[wKey];
-              const extEp  = kitsuEps?.find(e => Number(e.number) === epNum) || kitsuEps?.[i];
+              const extEp  = kitsuEps?.[i] || kitsuEps?.find(e => Number(e.number) === epNum);
               const thumb  = extEp?.still || null;
               return (
               <div key={i} className="group relative">
@@ -337,7 +338,7 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
                 {editMode && isOwner ? (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <input defaultValue={row.num ?? i + 1}
+                      <input defaultValue={epNum}
                              onBlur={e => updateCell(i, "num", e.target.value)}
                              className={inCls} style={{ width: 36 }} placeholder="N°" />
                       <input defaultValue={row.title}
@@ -354,7 +355,7 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
                     <div>
                       <p className="font-heading font-semibold text-[.82rem] leading-snug mb-0.5"
                          style={{ color: seen ? "rgba(46,204,113,.7)" : "var(--creme)" }}>
-                        E{row.num ?? i + 1}{row.title ? <span className="font-normal" style={{ color: seen ? "rgba(46,204,113,.5)" : "var(--creme-dim)" }}> — {row.title}</span> : ""}
+                        E{epNum}{row.title ? <span className="font-normal" style={{ color: seen ? "rgba(46,204,113,.5)" : "var(--creme-dim)" }}> — {row.title}</span> : ""}
                       </p>
                       {row.date && <p className="font-body text-[.7rem] text-creme-dim/60">{row.date}</p>}
                     </div>
