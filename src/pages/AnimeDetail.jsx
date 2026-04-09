@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import AddEditModal from "./Catalogue/AddEditModal";
 import { getGenreList, getStatusClass, getPlatforms, formatCountdown } from "../constants";
 import useExternalMedia from "../hooks/useExternalMedia";
+import usePoster        from "../hooks/usePoster";
 
 /* ── Controlled date input with calendar picker ── */
 function EpDateInput({ defaultValue, onSave, cls }) {
@@ -453,10 +454,8 @@ export default function AnimeDetail() {
     if (user) saveWatched(user.uid, id, updated).catch(() => {});
   }
 
-  const { banner: extBanner, seasons: extSeasons } = useExternalMedia(
-    anime?.title,
-    anime?.img2 || anime?.img1 || null
-  );
+  const { seasons: extSeasons } = useExternalMedia(anime?.title, null);
+  const posterSrc = usePoster(anime?.title, anime?.img1);
 
   if (loading) return (
     <div className="min-h-screen bg-noir flex items-center justify-center">
@@ -483,9 +482,7 @@ export default function AnimeDetail() {
   const tables    = anime.tables || [];
 
   const activeSeason = extSeasons[activeSeasonIdx] || null;
-  const seasonBanner = activeSeason?.banner || null;
-  const seasonEps    = activeSeason?.eps    || extSeasons[0]?.eps || [];
-  const bannerSrc = seasonBanner || extBanner || anime.img2 || anime.img1 || null;
+  const seasonEps    = activeSeason?.eps || extSeasons[0]?.eps || [];
 
   const allPlats = Array.isArray(anime.platforms) && anime.platforms.length > 0
     ? anime.platforms
@@ -509,27 +506,41 @@ export default function AnimeDetail() {
       <Navbar embedded />
 
       {/* ── Hero ── */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "2549/637" }}>
+      <div className="relative w-full overflow-hidden flex items-stretch"
+           style={{ minHeight: "clamp(400px, 58vh, 540px)" }}>
 
-        {/* Background image — full width, change per season */}
-        {bannerSrc ? (
-          <div key={bannerSrc} className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-               style={{ backgroundImage: `url("${bannerSrc}")`, animation: "fadein .5s ease" }} />
-        ) : (
-          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#13131A,#1C1C26)" }} />
+        {/* Fond sombre */}
+        <div className="absolute inset-0"
+             style={{ background: "linear-gradient(135deg, #0d0d12 0%, #16161f 100%)" }} />
+
+        {/* Grille déco */}
+        <div className="absolute inset-0 pointer-events-none"
+             style={{ backgroundImage: "repeating-linear-gradient(0deg,rgba(245,196,46,.02) 0,rgba(245,196,46,.02) 1px,transparent 1px,transparent 80px),repeating-linear-gradient(90deg,rgba(245,196,46,.02) 0,rgba(245,196,46,.02) 1px,transparent 1px,transparent 80px)" }} />
+
+        {/* Orbe ambiance */}
+        <div className="absolute pointer-events-none"
+             style={{ width: 600, height: 600, top: -250, left: -150, background: "rgba(232,0,28,.07)", filter: "blur(110px)", borderRadius: "50%" }} />
+
+        {/* Image portrait — droite */}
+        {posterSrc && (
+          <div className="absolute right-0 top-0 bottom-0" style={{ width: "clamp(200px, 25%, 290px)" }}>
+            <div className="absolute inset-y-0 left-0 z-10"
+                 style={{ width: "55%", background: "linear-gradient(to right, #0d0d12, transparent)" }} />
+            <div className="absolute inset-x-0 bottom-0 z-10 h-24"
+                 style={{ background: "linear-gradient(to bottom, transparent, #0a0a10)" }} />
+            <img key={posterSrc} src={posterSrc} alt={anime.title}
+                 className="w-full h-full object-cover object-top block"
+                 style={{ animation: "fadein .5s ease" }} />
+          </div>
         )}
 
-        {/* Left-to-right dark gradient */}
-        <div className="absolute inset-0"
-             style={{ background: "linear-gradient(to right, rgba(13,13,18,.98) 0%, rgba(13,13,18,.92) 35%, rgba(13,13,18,.65) 55%, rgba(13,13,18,.15) 75%, rgba(13,13,18,0) 100%)" }} />
-
-        {/* Bottom fade */}
-        <div className="absolute inset-x-0 bottom-0 h-40"
-             style={{ background: "linear-gradient(to bottom, rgba(13,13,18,0) 0%, rgba(13,13,18,1) 100%)" }} />
+        {/* Bottom fade global */}
+        <div className="absolute inset-x-0 bottom-0 h-14 pointer-events-none"
+             style={{ background: "linear-gradient(to bottom, transparent, #0a0a10)" }} />
 
         {/* Content */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-end px-[12%] pb-10 pt-20"
-             style={{ maxWidth: "min(75%, 1050px)" }}>
+        <div className="relative z-10 flex flex-col justify-end px-[12%] pb-10 pt-20 w-full"
+             style={{ maxWidth: posterSrc ? "min(75%, 960px)" : "min(75%, 1050px)" }}>
 
           <button onClick={() => navigate(-1)}
                   className="btn-primary absolute top-4 left-[10%] flex items-center gap-2"
@@ -633,7 +644,7 @@ export default function AnimeDetail() {
       {/* ── Episodes ── */}
       <div className="relative z-10 flex-1"
            style={{ background: "linear-gradient(to bottom, #0a0a10 0%, #16161f 30%, #1a1a26 60%, #0d0d14 100%)" }}>
-        <EpisodeGrid tables={tables} bannerSrc={bannerSrc}
+        <EpisodeGrid tables={tables}
                      isOwner={isOwner} anime={anime} onTablesUpdated={handleTablesUpdated}
                      kitsuEps={seasonEps}
                      activeIdx={activeSeasonIdx} onSeasonChange={setActiveSeasonIdx}
