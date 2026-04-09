@@ -495,9 +495,20 @@ export default function AnimeDetail() {
   const synShort   = anime.synopsis?.length > SYN_LIMIT
     ? anime.synopsis.slice(0, SYN_LIMIT) + "…" : anime.synopsis;
 
-  const firstEp = tables[0]?.rows?.[0];
+  // Premier épisode non vu (toutes saisons)
+  function getNextEp() {
+    for (let si = 0; si < tables.length; si++) {
+      const rows = tables[si]?.rows || [];
+      for (let ri = 0; ri < rows.length; ri++) {
+        if (!watched[`${si}_${ri}`]) return { row: rows[ri], si, ri };
+      }
+    }
+    return null; // tout vu
+  }
+  const nextEp = getNextEp();
 
   function handleWatch() {
+    if (nextEp?.row?.link) { window.open(nextEp.row.link, "_blank", "noopener,noreferrer"); return; }
     if (platforms.length === 1) { window.open(platforms[0].url, "_blank", "noopener,noreferrer"); return; }
     setPickerOpen(v => !v);
   }
@@ -588,7 +599,7 @@ export default function AnimeDetail() {
                         className="btn-primary flex items-center gap-2.5"
                         style={{ padding: "13px 28px", fontSize: ".8rem", letterSpacing: ".12em" }}>
                   <span className="text-[1.1rem] leading-none">▶</span>
-                  {firstEp ? `Regarder E${firstEp.num ?? 1}` : "Regarder"}
+                  {nextEp ? `Regarder E${nextEp.row.num ?? nextEp.ri + 1}` : "Regarder"}
                 </button>
                 {pickerOpen && platforms.length > 1 && (
                   <div className="absolute bottom-[calc(100%+8px)] left-0 z-50 min-w-[200px] border border-gris"
