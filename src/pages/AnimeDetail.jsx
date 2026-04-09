@@ -11,12 +11,18 @@ import useExternalMedia from "../hooks/useExternalMedia";
 /* ── Controlled date input with calendar picker ── */
 function EpDateInput({ defaultValue, onSave, cls }) {
   const [val, setVal] = useState(defaultValue || "");
-  const pickerRef = useRef(null);
 
   function fromIso(iso) {
     if (!iso) return "";
     const [y, m, d] = iso.split("-");
     return `${d}/${m}/${y}`;
+  }
+
+  function toIso(str) {
+    if (!str) return "";
+    const p = str.split("/");
+    if (p.length !== 3 || p[2].length !== 4) return "";
+    return `${p[2]}-${p[1]}-${p[0]}`;
   }
 
   return (
@@ -25,20 +31,18 @@ function EpDateInput({ defaultValue, onSave, cls }) {
              onChange={e => setVal(e.target.value)}
              onBlur={() => onSave(val)}
              className={cls} placeholder="jj/mm/aaaa" />
-      <input ref={pickerRef} type="date"
-             style={{ position: "fixed", top: -9999, left: -9999, opacity: 0, pointerEvents: "none" }}
-             onChange={e => {
-               if (!e.target.value) return;
-               const formatted = fromIso(e.target.value);
-               setVal(formatted);
-               onSave(formatted);
-             }} />
-      <button type="button"
-              onClick={() => { try { pickerRef.current?.showPicker(); } catch { pickerRef.current?.click(); } }}
-              className="flex-shrink-0 bg-transparent border-none cursor-pointer text-white/25 hover:text-or transition-colors duration-200"
-              style={{ fontSize: ".95rem", lineHeight: 1 }}>
-        📅
-      </button>
+      <div className="relative flex-shrink-0 w-6 h-6 flex items-center justify-center">
+        <span className="text-white/25 pointer-events-none" style={{ fontSize: ".95rem" }}>📅</span>
+        <input type="date" value={toIso(val)}
+               onChange={e => {
+                 if (!e.target.value) return;
+                 const formatted = fromIso(e.target.value);
+                 setVal(formatted);
+                 onSave(formatted);
+               }}
+               className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+               style={{ zIndex: 1 }} />
+      </div>
     </div>
   );
 }
