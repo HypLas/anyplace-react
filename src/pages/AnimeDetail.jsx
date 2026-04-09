@@ -74,8 +74,13 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
     const t = JSON.parse(JSON.stringify(tables));
     const rows = t[activeIdx].rows;
     const n = parseInt(count) || 1;
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const yyyy = today.getFullYear();
+    const todayStr = `${dd}/${mm}/${yyyy}`;
     for (let i = 1; i <= n; i++) {
-      rows.push({ num: rows.length + 1, title: "", date: "" });
+      rows.push({ num: rows.length + 1, title: "", date: todayStr });
     }
     await save(t);
     setBulkCount("");
