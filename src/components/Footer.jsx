@@ -17,7 +17,6 @@ export default function Footer() {
           <Link to="/"          className="font-body text-[.82rem] text-creme-dim no-underline hover:text-creme transition-colors duration-200">Accueil</Link>
           <Link to="/catalogue" className="font-body text-[.82rem] text-creme-dim no-underline hover:text-creme transition-colors duration-200">Catalogue</Link>
           <Link to="/anime"     className="font-body text-[.82rem] text-creme-dim no-underline hover:text-creme transition-colors duration-200">Ma liste</Link>
-          <Link to="/manhwa"    className="font-body text-[.82rem] text-creme-dim no-underline hover:text-creme transition-colors duration-200">Manhwa</Link>
         </div>
 
         <p className="font-body text-[.75rem] text-gris-lt">© 2025 Any'place</p>

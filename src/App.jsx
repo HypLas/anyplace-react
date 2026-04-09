@@ -1,15 +1,11 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { lazy, Suspense, useEffect, useState } from "react";
 
-const Home             = lazy(() => import("./pages/Home"));
-const Login            = lazy(() => import("./pages/Login"));
-const Catalogue        = lazy(() => import("./pages/Catalogue"));
-const Anime            = lazy(() => import("./pages/Anime"));
-const Manhwa           = lazy(() => import("./pages/Manhwa"));
-const Hentai           = lazy(() => import("./pages/Hentai"));
-const AnimeDetail      = lazy(() => import("./pages/AnimeDetail"));
-const HentaiAnimeDetail = lazy(() => import("./pages/HentaiAnimeDetail"));
-const ManhwaDetail      = lazy(() => import("./pages/ManhwaDetail"));
+const Home        = lazy(() => import("./pages/Home"));
+const Login       = lazy(() => import("./pages/Login"));
+const Catalogue   = lazy(() => import("./pages/Catalogue"));
+const Anime       = lazy(() => import("./pages/Anime"));
+const AnimeDetail = lazy(() => import("./pages/AnimeDetail"));
 
 function PageTransition({ children }) {
   const location          = useLocation();
@@ -55,13 +51,9 @@ export default function App() {
           <Routes>
             <Route path="/"          element={<Home />} />
             <Route path="/login"     element={<Login />} />
-            <Route path="/catalogue"        element={<Catalogue />} />
-            <Route path="/anime"            element={<Anime />} />
-            <Route path="/anime/:id"        element={<AnimeDetail />} />
-            <Route path="/manhwa"           element={<Manhwa />} />
-            <Route path="/manhwa/:id"       element={<ManhwaDetail />} />
-            <Route path="/hentai"           element={<Hentai />} />
-            <Route path="/hentai/anime/:id" element={<HentaiAnimeDetail />} />
+            <Route path="/catalogue" element={<Catalogue />} />
+            <Route path="/anime"     element={<Anime />} />
+            <Route path="/anime/:id" element={<AnimeDetail />} />
           </Routes>
         </PageTransition>
       </Suspense>

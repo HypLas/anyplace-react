@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { logout } from "../firebase";
 
 export default function Navbar({ embedded = false }) {
-  const { user, isOwner, canHentai } = useAuth();
+  const { user, isOwner } = useAuth();
   const navigate = useNavigate();
 
   const linkCls = ({ isActive }) =>
@@ -30,19 +30,6 @@ export default function Navbar({ embedded = false }) {
         <li><NavLink to="/"          className={linkCls}>Accueil</NavLink></li>
         <li><NavLink to="/catalogue" className={linkCls}>Catalogue</NavLink></li>
         <li><NavLink to="/anime"     className={linkCls}>Ma liste</NavLink></li>
-        <li><NavLink to="/manhwa"    className={linkCls}>Manhwa</NavLink></li>
-        {canHentai && (
-          <li>
-            <NavLink to="/hentai"
-              className={({ isActive }) =>
-                `font-heading font-semibold text-[.82rem] tracking-[.05em] uppercase relative transition-colors duration-200
-                 after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:right-0
-                 after:h-[2px] after:bg-rouge after:transition-transform after:duration-200 after:origin-left
-                 ${isActive ? "text-rouge after:scale-x-100" : "text-rouge/50 hover:text-rouge after:scale-x-0 hover:after:scale-x-100"}`}>
-              🔞
-            </NavLink>
-          </li>
-        )}
       </ul>
 
       {/* User */}

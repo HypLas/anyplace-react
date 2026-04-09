@@ -131,7 +131,7 @@ export default function Home() {
                 FEATURED
               </span>
               <div className="flex flex-wrap gap-2 mb-8">
-                {["Action","Shōnen","Fantasy","Romance","Seinen","Isekai","Manhwa","Manga","Hentai","Mecha"].map(g => (
+                {["Action","Shōnen","Fantasy","Romance","Seinen","Isekai","Mecha","Psychologique","Thriller","Slice of Life"].map(g => (
                   <span key={g}
                         className="font-body font-medium text-[.76rem] bg-noir-3 border border-gris text-creme-dim px-3 py-1 cursor-default transition-all duration-200 hover:border-rouge hover:text-creme"
                         style={{ borderRadius:2 }}>
