@@ -454,7 +454,7 @@ export default function AnimeDetail() {
     if (user) saveWatched(user.uid, id, updated).catch(() => {});
   }
 
-  const { seasons: extSeasons } = useExternalMedia(anime?.title, null);
+  const { banner: extBanner, seasons: extSeasons } = useExternalMedia(anime?.title);
   const posterSrc = usePoster(anime?.title, anime?.img1);
 
   if (loading) return (
@@ -482,7 +482,10 @@ export default function AnimeDetail() {
   const tables    = anime.tables || [];
 
   const activeSeason = extSeasons[activeSeasonIdx] || null;
-  const seasonEps    = activeSeason?.eps || extSeasons[0]?.eps || [];
+  const seasonBanner = activeSeason?.banner || null;
+  const seasonEps    = activeSeason?.eps    || extSeasons[0]?.eps || [];
+  // Hero : uniquement images paysage (jamais img1 qui est portrait)
+  const bannerSrc    = seasonBanner || extBanner || anime.img2 || null;
 
   const allPlats = Array.isArray(anime.platforms) && anime.platforms.length > 0
     ? anime.platforms
@@ -506,41 +509,27 @@ export default function AnimeDetail() {
       <Navbar embedded />
 
       {/* ── Hero ── */}
-      <div className="relative w-full overflow-hidden flex items-stretch"
-           style={{ minHeight: "clamp(400px, 58vh, 540px)" }}>
+      <div className="relative w-full overflow-hidden" style={{ minHeight: "clamp(420px, 58vh, 680px)" }}>
 
-        {/* Fond sombre */}
-        <div className="absolute inset-0"
-             style={{ background: "linear-gradient(135deg, #0d0d12 0%, #16161f 100%)" }} />
-
-        {/* Grille déco */}
-        <div className="absolute inset-0 pointer-events-none"
-             style={{ backgroundImage: "repeating-linear-gradient(0deg,rgba(245,196,46,.02) 0,rgba(245,196,46,.02) 1px,transparent 1px,transparent 80px),repeating-linear-gradient(90deg,rgba(245,196,46,.02) 0,rgba(245,196,46,.02) 1px,transparent 1px,transparent 80px)" }} />
-
-        {/* Orbe ambiance */}
-        <div className="absolute pointer-events-none"
-             style={{ width: 600, height: 600, top: -250, left: -150, background: "rgba(232,0,28,.07)", filter: "blur(110px)", borderRadius: "50%" }} />
-
-        {/* Image portrait — droite */}
-        {posterSrc && (
-          <div className="absolute right-0 top-0 bottom-0" style={{ width: "clamp(200px, 25%, 290px)" }}>
-            <div className="absolute inset-y-0 left-0 z-10"
-                 style={{ width: "55%", background: "linear-gradient(to right, #0d0d12, transparent)" }} />
-            <div className="absolute inset-x-0 bottom-0 z-10 h-24"
-                 style={{ background: "linear-gradient(to bottom, transparent, #0a0a10)" }} />
-            <img key={posterSrc} src={posterSrc} alt={anime.title}
-                 className="w-full h-full object-cover object-top block"
-                 style={{ animation: "fadein .5s ease" }} />
-          </div>
+        {/* Image paysage pleine largeur */}
+        {bannerSrc ? (
+          <div key={bannerSrc} className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+               style={{ backgroundImage: `url("${bannerSrc}")`, animation: "fadein .5s ease" }} />
+        ) : (
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#13131A,#1C1C26)" }} />
         )}
 
-        {/* Bottom fade global */}
-        <div className="absolute inset-x-0 bottom-0 h-14 pointer-events-none"
-             style={{ background: "linear-gradient(to bottom, transparent, #0a0a10)" }} />
+        {/* Dégradé gauche → droite (texte lisible à gauche) */}
+        <div className="absolute inset-0"
+             style={{ background: "linear-gradient(to right, rgba(13,13,18,.97) 0%, rgba(13,13,18,.88) 30%, rgba(13,13,18,.55) 55%, rgba(13,13,18,.1) 78%, rgba(13,13,18,0) 100%)" }} />
+
+        {/* Fondu bas */}
+        <div className="absolute inset-x-0 bottom-0 h-44"
+             style={{ background: "linear-gradient(to bottom, rgba(13,13,18,0) 0%, rgba(13,13,18,1) 100%)" }} />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-end px-[12%] pb-10 pt-20 w-full"
-             style={{ maxWidth: posterSrc ? "min(75%, 960px)" : "min(75%, 1050px)" }}>
+        <div className="absolute inset-0 z-10 flex flex-col justify-end px-[12%] pb-10 pt-20"
+             style={{ maxWidth: "min(72%, 1000px)" }}>
 
           <button onClick={() => navigate(-1)}
                   className="btn-primary absolute top-4 left-[10%] flex items-center gap-2"

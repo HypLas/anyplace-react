@@ -4,6 +4,7 @@ const QUERY = `
 query ($search: String) {
   Media(search: $search, type: ANIME, isAdult: false) {
     coverImage { extraLarge large }
+    bannerImage
   }
 }`;
 
