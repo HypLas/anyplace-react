@@ -63,6 +63,13 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
     await save(t);
   }
 
+  function openEpisode(row) {
+    if (row.link) { window.open(row.link, "_blank", "noopener,noreferrer"); return; }
+    // fallback → première plateforme disponible
+    const plat = (anime.platforms || []).find(p => p.url) || (anime.watchLink ? { url: anime.watchLink } : null);
+    if (plat?.url) window.open(plat.url, "_blank", "noopener,noreferrer");
+  }
+
   async function addRows(count = 1) {
     const t = JSON.parse(JSON.stringify(tables));
     const rows = t[activeIdx].rows;
@@ -239,8 +246,11 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
                 {/* Thumbnail — Kitsu si dispo, sinon placeholder */}
                 {(() => {
                   const imgSrc = thumb || null;
+                  const hasLink = !!(row.link || (anime.platforms || []).find(p => p.url) || anime.watchLink);
                   return (
-                    <div className="relative overflow-hidden mb-2.5" style={{ aspectRatio: "16/9", borderRadius: 2 }}>
+                    <div className={`relative overflow-hidden mb-2.5 ${!editMode && hasLink ? "cursor-pointer" : ""}`}
+                         style={{ aspectRatio: "16/9", borderRadius: 2 }}
+                         onClick={!editMode && !bulkDeleteMode ? () => openEpisode(row) : undefined}>
                       {imgSrc ? (
                         <img src={imgSrc} alt={`Épisode ${epNum}`}
                              className="w-full h-full object-cover block transition-transform duration-500 group-hover:scale-105"
@@ -274,10 +284,10 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
                       )}
 
                       {/* Bouton play hover */}
-                      {!editMode && !seen && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {!editMode && !bulkDeleteMode && (
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                           <div className="w-10 h-10 rounded-full flex items-center justify-center"
-                               style={{ background: "rgba(232,0,28,.88)", boxShadow: "0 0 20px rgba(232,0,28,.5)" }}>
+                               style={{ background: row.link ? "rgba(232,0,28,.88)" : "rgba(60,60,80,.88)", boxShadow: row.link ? "0 0 20px rgba(232,0,28,.5)" : "none" }}>
                             <span className="text-white text-[.9rem] ml-0.5">▶</span>
                           </div>
                         </div>
@@ -322,6 +332,9 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
                              className={inCls} placeholder="Titre de l'épisode…" />
                     </div>
                     <EpDateInput defaultValue={row.date} onSave={v => updateCell(i, "date", v)} cls={inCls} />
+                    <input defaultValue={row.link || ""}
+                           onBlur={e => updateCell(i, "link", e.target.value || null)}
+                           className={inCls} placeholder="🔗 Lien direct (https://…)" type="url" />
                   </div>
                 ) : (
                   <div className="flex items-start justify-between gap-2">
@@ -332,6 +345,14 @@ function EpisodeGrid({ tables: initTables, isOwner, anime, onTablesUpdated, kits
                       </p>
                       {row.date && <p className="font-body text-[.7rem] text-creme-dim/60">{row.date}</p>}
                     </div>
+                    {row.link && (
+                      <a href={row.link} target="_blank" rel="noopener noreferrer"
+                         onClick={e => e.stopPropagation()}
+                         className="flex-shrink-0 font-heading text-[.6rem] tracking-[.08em] uppercase px-2 py-0.5 no-underline transition-colors duration-200"
+                         style={{ color: "var(--rouge)", border: "1px solid rgba(232,0,28,.3)" }}>
+                        ▶
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
