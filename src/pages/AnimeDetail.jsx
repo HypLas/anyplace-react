@@ -599,7 +599,11 @@ export default function AnimeDetail() {
                         className="btn-primary flex items-center gap-2.5"
                         style={{ padding: "13px 28px", fontSize: ".8rem", letterSpacing: ".12em" }}>
                   <span className="text-[1.1rem] leading-none">▶</span>
-                  {nextEp ? `Regarder E${nextEp.row.num ?? nextEp.ri + 1}` : "Regarder"}
+                  {nextEp
+                    ? nextEp.si > 0
+                      ? `Regarder S${nextEp.si + 1}·E${nextEp.ri + 1}`
+                      : `Regarder E${nextEp.ri + 1}`
+                    : "Regarder"}
                 </button>
                 {pickerOpen && platforms.length > 1 && (
                   <div className="absolute bottom-[calc(100%+8px)] left-0 z-50 min-w-[200px] border border-gris"
